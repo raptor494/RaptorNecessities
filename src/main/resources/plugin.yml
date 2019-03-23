@@ -1,0 +1,188 @@
+name: RaptorNecessities
+main: com.raptor.plugins.tp.RaptorNecessities
+author: Raptor__
+version: 1.0
+depend: [RaptorAPI]
+api-version: 1.13
+
+permissions:
+  raptortps.back:
+    description: Allows the use of /back
+    default: true
+  raptortps.tpa:
+    description: Allows the use of /tpa
+    default: true
+  raptortps.tpahere:
+    description: Allows the use of /tpahere
+    default: true
+  raptortps.tpaall:
+    description: Allows the use of /tpaall
+    default: op
+  raptortps.tpcancel:
+    description: Allows the use of /tpcancel
+    default: true
+  raptortps.tpaccept:
+    description: Allows the use of /tpaccept
+    default: true
+  raptortps.tpdeny:
+    description: Allows the use of /tpdeny
+    default: true
+  raptortps.tpignore:
+    description: Allows the use of /tpignore
+    default: true
+  raptortps.tpunignore:
+    description: Allows the use of /tpunignore
+    default: true
+  raptortps.tpignore.list:
+    description: Allows listing players who you are ignoring requests from
+    default: true
+  raptortps.home:
+    description: Allows the use of /home
+    default: true
+  raptortps.home.others:
+    description: Allows the use of /home to travel to other players' homes
+    default: op
+  raptortps.sethome:
+    description: Allows the use of /sethome
+    default: true
+  raptortps.sethome.others:
+    description: Allows the use of /sethome to set other players' homes
+    default: op
+  raptortps.sethome.multiple:
+    description: Allows having multiple homes, based on the config file
+    default: true
+    children:
+      raptortps.sethome.multiple.default: true
+      raptortps.sethome.multiple.override: false
+  raptortps.sethome.multiple.override:
+    description: Allows overriding the home limit
+    default: op
+  raptortps.delhome:
+    description: Allows the use of /delhome
+    default: true
+  raptortps.delhome.others:
+    description: Allows the use of /delhome to delete other players' homes
+    default: op
+  raptortps.warp:
+    description: Allows the use of /warp
+    default: true
+  raptortps.warp.list:
+    description: Allows listing warps
+    default: true
+  raptortps.setwarp:
+    description: Allows the use of /setwarp
+    default: op
+  raptortps.delwarp:
+    description: Allows the use of /delwarp
+    default: op
+  raptortps.reload:
+    description: Allows the use of /raptortps reload
+    default: op
+  raptortps.instant:
+    description: Allows instantaneous teleportation
+    default: op
+  raptortps.nickname:
+    description: Allows the use of /nickname
+    default: true
+  raptortps.nickname.others:
+    description: Allows the use of /nickname to change other players' nicknames
+    default: op
+      
+commands:
+  back:
+    description: Go to your previous location
+    usage: /<command>
+    permission: raptortps.back
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpa:
+    description: Ask to teleport to another player
+    usage: /<command> <player>
+    permission: raptortps.tpa
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpahere:
+    description: Ask another player to teleport to you
+    usage: /<command> <player>
+    permission: raptortps.tpahere
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpaall:
+    description: Ask all online players to teleport to you
+    usage: /<command>
+    permission: raptortps.tpaall
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpcancel:
+    description: Cancel any pending teleports/teleport requests
+    usage: /<command>
+    permission: raptortps.tpcancel
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpaccept:
+    description: Accept a pending teleport request
+    usage: /<command>
+    permission: raptortps.tpaccept
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpdeny:
+    description: Deny a pending teleport request
+    usage: /<command>
+    permission: raptortps.tpdeny
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpignore:
+    description: Ignore all incoming requests from a certain player
+    usage: /<command> [<player>]
+    permission: raptortps.tpignore
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  tpunignore:
+    description: Stop ignoring all incoming requests from a certain player
+    usage: /<command> <player>
+    permission: raptortps.tpunignore
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  home:
+    description: Teleport to one of your homes
+    usage: /<command> [<name>]
+    permission: raptortps.home
+    special-usage: /<command> [[<player>.]<name>]
+    special-permission: raptortps.home.others
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+    aliases: [h,homes]
+  sethome:
+    description: Set your home location
+    usage: /<command> [<name>]
+    permission: raptortps.sethome
+    special-usage: /<command> [[<player>.]<name>]
+    special-permission: raptortps.sethome.others
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+    aliases: [sh]
+  delhome:
+    description: Delete a home location
+    usage: /<command> [<name>]
+    permission: raptortps.delhome
+    special-usage: /<command> [[<player>.]<name>]
+    special-permission: raptortps.delhome.others
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  warp:
+    description: Warp to a predetermined location
+    usage: /<command> [<name>]
+    permission: raptortps.warp
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  setwarp:
+    description: Set a warp point
+    usage: /<command> <name>
+    permission: raptortps.setwarp
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  delwarp:
+    description: Delete a warp point
+    usage: /<command> <name>
+    permission: raptortps.delwarp
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  raptornecessities:
+    description: RaptorNecessities admin management command
+    usage: /<command> (reload | load | save)
+    permission: raptortps.reload
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+    aliases: [rnecessities]
+  nickname:
+    description: Change your nickname
+    usage: /<command> (<name> | -off)
+    permission: raptortps.nickname
+    special-usage: /<command> [<player>] (<name> | -off)
+    special-permission: raptortps.nickname.others
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+    aliases: [nick]

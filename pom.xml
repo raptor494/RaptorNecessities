@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.raptor.plugins.tp</groupId>
+	<artifactId>RaptorNecessities</artifactId>
+	<version>1.0</version>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<fork>true</fork>
+					<executable>C:\Program Files\Java\jdk-10.0.1\bin\javac.exe</executable>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>placeholderapi</id>
+			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+		</repository>
+		<!-- <repository>
+			<id>unei-repo</id>
+			<url>https://unei.gitlab.io/maven/</url>
+		</repository> -->
+		<!-- <repository>
+			<id>sk89q-repo</id>
+			<url>http://maven.sk89q.com/repo/</url>
+		</repository> -->
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.13.2-R0.1-SNAPSHOT</version><!--change this value depending on 
+				the version -->
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<!-- <dependency>
+			<groupId>me.unei</groupId>
+			<artifactId>UneiConfiguration</artifactId>
+			<version>LATEST</version>
+  			<classifier>jar-with-dependencies</classifier>
+			<scope>provided</scope>
+  			<optional>true</optional>
+		</dependency> -->
+		<dependency>
+			<groupId>com.raptor.plugins</groupId>
+			<artifactId>RaptorAPI</artifactId>
+			<version>0.1</version>
+			<type>jar</type>
+			<scope>system</scope>
+			<systemPath>C:\Users\flyin\Documents\Plugin Development 2\RaptorAPI\target\RaptorAPI-0.1.jar</systemPath>
+		</dependency>
+	</dependencies>
+</project>
