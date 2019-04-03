@@ -87,6 +87,9 @@ permissions:
   raptortps.nickname.others:
     description: Allows the use of /nickname to change other players' nicknames
     default: op
+  raptortps.sudo:
+    description: Allows the use of /sudo
+    default: op
       
 commands:
   back:
@@ -104,11 +107,11 @@ commands:
     usage: /<command> <player>
     permission: raptortps.tpahere
     permission-message: "\u00a7cYou do not have permission to perform this command."
-  tpaall:
-    description: Ask all online players to teleport to you
-    usage: /<command>
-    permission: raptortps.tpaall
-    permission-message: "\u00a7cYou do not have permission to perform this command."
+#  tpaall:
+#    description: Ask all online players to teleport to you
+#    usage: /<command>
+#    permission: raptortps.tpaall
+#    permission-message: "\u00a7cYou do not have permission to perform this command."
   tpcancel:
     description: Cancel any pending teleports/teleport requests
     usage: /<command>
@@ -138,7 +141,7 @@ commands:
     description: Teleport to one of your homes
     usage: /<command> [<name>]
     permission: raptortps.home
-    special-usage: /<command> [[<player>.]<name>]
+    special-usage: /<command> [<player>.][<name>]
     special-permission: raptortps.home.others
     permission-message: "\u00a7cYou do not have permission to perform this command."
     aliases: [h,homes]
@@ -146,7 +149,7 @@ commands:
     description: Set your home location
     usage: /<command> [<name>]
     permission: raptortps.sethome
-    special-usage: /<command> [[<player>.]<name>]
+    special-usage: /<command> [<player>.][<name>]
     special-permission: raptortps.sethome.others
     permission-message: "\u00a7cYou do not have permission to perform this command."
     aliases: [sh]
@@ -154,7 +157,7 @@ commands:
     description: Delete a home location
     usage: /<command> [<name>]
     permission: raptortps.delhome
-    special-usage: /<command> [[<player>.]<name>]
+    special-usage: /<command> [<player>.][<name>]
     special-permission: raptortps.delhome.others
     permission-message: "\u00a7cYou do not have permission to perform this command."
   warp:
@@ -186,3 +189,9 @@ commands:
     special-permission: raptortps.nickname.others
     permission-message: "\u00a7cYou do not have permission to perform this command."
     aliases: [nick]
+  sudo:
+    description: Run a command as another player
+    usage: /<command> <player> <command...>
+    permission: raptortps.sudo
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+    aliases: [pseudo]

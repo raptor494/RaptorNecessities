@@ -6,15 +6,20 @@ import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -73,7 +78,7 @@ public final class RaptorNecessities extends RaptorPlugin {
 		registerCommand("back", new CommandBack());
 		registerCommand("tpa", new CommandTpa());
 		registerCommand("tpahere", new CommandTpaHere());
-		registerCommand("tpaall", new CommandTpaAll());
+		//registerCommand("tpaall", new CommandTpaAll());
 		registerCommand("tpcancel", new CommandTpCancel());
 		registerCommand("tpaccept", new CommandTpAccept());
 		registerCommand("tpdeny", new CommandTpDeny());
@@ -86,6 +91,7 @@ public final class RaptorNecessities extends RaptorPlugin {
 		registerCommand("setwarp", new CommandSetWarp());
 		registerCommand("delwarp", new CommandDelWarp());
 		registerCommand("nickname", new CommandNickname());
+		registerCommand("sudo", new CommandSudo());
 		registerCommand("raptornecessities", new CommandRaptorNecessities());
 		registerListener(new EventHandlers(this));
 	}
@@ -530,6 +536,7 @@ public final class RaptorNecessities extends RaptorPlugin {
 		
 	}
 	
+	@Deprecated
 	class CommandTpaAll extends RPlayerCommand {
 
 		@Override
@@ -629,6 +636,13 @@ public final class RaptorNecessities extends RaptorPlugin {
 				sender.spigot().sendMessage(config.getTeleportIgnoredMessage(ignored));
 			}
 		}
+
+		@Override
+		public List<String> onTabComplete(Player player, String label, String[] args) {
+			if(args.length <= 1)
+				return onlinePlayerNamesMatchingLastArg(args);
+			return super.onTabComplete(player, label, args);
+		}
 		
 	}
 	
@@ -648,8 +662,20 @@ public final class RaptorNecessities extends RaptorPlugin {
 			}
 			
 			PlayerData playerData = getPlayerDataFor(sender);
-			playerData.stopIgnoringRequestsFrom(ignored);
-			sender.spigot().sendMessage(config.getTeleportUnignoredMessage(ignored));
+			if(playerData.stopIgnoringRequestsFrom(ignored)) {
+				sender.spigot().sendMessage(config.getTeleportUnignoredMessage(ignored));
+			} else {
+				sender.spigot().sendMessage(config.getNotCurrentlyIgnoringTeleportMessage(ignored));
+			}
+		}
+
+		@Override
+		public List<String> onTabComplete(Player player, String label, String[] args) {
+			if(args.length <= 1) {
+				PlayerData playerData = getPlayerDataFor(player);
+				return stringsMatchingLastArg(args, true, playerData.getIgnoredPlayers().stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()));
+			}
+			return Collections.emptyList();
 		}
 		
 	}
@@ -690,7 +716,21 @@ public final class RaptorNecessities extends RaptorPlugin {
 				}
 				if(sender.hasPermission("raptortps.home.others")) {
 					int dotIndex = home.indexOf('.');
-					if(dotIndex > 0 && dotIndex < home.length()-1) {
+					if(dotIndex == home.length()-1) {
+						String name = home.substring(0, dotIndex);
+						OfflinePlayer player = offlinePlayer(name);
+						if(player == null) {
+							sender.sendMessage(playerNotFound(name, label, args, 1));
+						} else {
+							playerData = getPlayerDataFor(player);
+							if(playerData.homeCount() == 0) {
+								sender.spigot().sendMessage(config.getNoHomesSetMessage());
+							} else {
+								sender.spigot().sendMessage(config.getHomesList(playerData.getHomes()));
+							}
+						}
+						return;
+					} else if(dotIndex > 0) {
 						String name = home.substring(0, dotIndex);
 						OfflinePlayer player = offlinePlayer(name);
 						if(player == null) {
@@ -728,7 +768,7 @@ public final class RaptorNecessities extends RaptorPlugin {
 				String home = join(args);
 				if(sender.hasPermission("raptortps.home.others")) {
 					int dotIndex = home.indexOf('.');
-					if(dotIndex > 0 && dotIndex < home.length()-1) {
+					if(dotIndex > 0) {
 						OfflinePlayer player = offlinePlayer(home.substring(0, dotIndex));
 						if(player != null) {
 							PlayerData playerData = getPlayerDataFor(player);
@@ -736,6 +776,28 @@ public final class RaptorNecessities extends RaptorPlugin {
 							String prefix = home.substring(0, dotIndex+1);
 							return results.stream().map(str -> prefix + str).collect(Collectors.toList());
 						}
+					} else if(dotIndex == -1) {
+						PlayerData playerData = getPlayerDataFor(sender);
+						Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+						List<String> results = new ArrayList<>(playerData.homeCount() + players.size());
+						if(home.isEmpty()) {
+							results.addAll(playerData.getHomeNames());
+							for(Player player : players) {
+								results.add(player.getName() + ".");
+							}
+						} else {
+							for(String homeName : playerData.getHomeNames()) {
+								if(StringUtils.startsWithIgnoreCase(homeName, home)) {
+									results.add(homeName);
+								}
+							}
+							for(Player player : players) {
+								if(StringUtils.startsWithIgnoreCase(player.getName(), home)) {
+									results.add(player.getName() + ".");
+								}
+							}
+						}
+						return results;
 					}
 				}
 				PlayerData playerData = getPlayerDataFor(sender);
@@ -831,7 +893,7 @@ public final class RaptorNecessities extends RaptorPlugin {
 				String home = join(args);
 				if(sender.hasPermission("raptortps.sethome.others")) {
 					int dotIndex = home.indexOf('.');
-					if(dotIndex > 0 && dotIndex < home.length()-1) {
+					if(dotIndex > 0) {
 						OfflinePlayer player = offlinePlayer(home.substring(0, dotIndex));
 						if(player != null) {
 							PlayerData playerData = getPlayerDataFor(player);
@@ -839,6 +901,28 @@ public final class RaptorNecessities extends RaptorPlugin {
 							String prefix = home.substring(0, dotIndex+1);
 							return results.stream().map(str -> prefix + str).collect(Collectors.toList());
 						}
+					} else if(dotIndex == -1) {
+						PlayerData playerData = getPlayerDataFor(sender);
+						Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+						List<String> results = new ArrayList<>(playerData.homeCount() + players.size());
+						if(home.isEmpty()) {
+							results.addAll(playerData.getHomeNames());
+							for(Player player : players) {
+								results.add(player.getName() + ".");
+							}
+						} else {
+							for(String homeName : playerData.getHomeNames()) {
+								if(StringUtils.startsWithIgnoreCase(homeName, home)) {
+									results.add(homeName);
+								}
+							}
+							for(Player player : players) {
+								if(StringUtils.startsWithIgnoreCase(player.getName(), home)) {
+									results.add(player.getName() + ".");
+								}
+							}
+						}
+						return results;
 					}
 				}
 				PlayerData playerData = getPlayerDataFor(sender);
@@ -922,7 +1006,7 @@ public final class RaptorNecessities extends RaptorPlugin {
 				String home = join(args);
 				if(sender.hasPermission("raptortps.delhome.others")) {
 					int dotIndex = home.indexOf('.');
-					if(dotIndex > 0 && dotIndex < home.length()-1) {
+					if(dotIndex > 0) {
 						OfflinePlayer player = offlinePlayer(home.substring(0, dotIndex));
 						if(player != null) {
 							PlayerData playerData = getPlayerDataFor(player);
@@ -930,6 +1014,28 @@ public final class RaptorNecessities extends RaptorPlugin {
 							String prefix = home.substring(0, dotIndex+1);
 							return results.stream().map(str -> prefix + str).collect(Collectors.toList());
 						}
+					} else if(dotIndex == -1) {
+						PlayerData playerData = getPlayerDataFor(sender);
+						Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+						List<String> results = new ArrayList<>(playerData.homeCount() + players.size());
+						if(home.isEmpty()) {
+							results.addAll(playerData.getHomeNames());
+							for(Player player : players) {
+								results.add(player.getName() + ".");
+							}
+						} else {
+							for(String homeName : playerData.getHomeNames()) {
+								if(StringUtils.startsWithIgnoreCase(homeName, home)) {
+									results.add(homeName);
+								}
+							}
+							for(Player player : players) {
+								if(StringUtils.startsWithIgnoreCase(player.getName(), home)) {
+									results.add(player.getName() + ".");
+								}
+							}
+						}
+						return results;
 					}
 				}
 				PlayerData playerData = getPlayerDataFor(sender);
@@ -1059,7 +1165,7 @@ public final class RaptorNecessities extends RaptorPlugin {
 				nickname = args[0];				
 			}
 			
-			if("-off".equals(nickname) || nickname.equals(player.getName())) {
+			if("-off".equalsIgnoreCase(nickname) || nickname.equals(player.getName())) {
 				nickname = null;
 			} else if(nickname.equals(player.getDisplayName())) {
 				sender.spigot().sendMessage(config.confusion());
@@ -1093,6 +1199,42 @@ public final class RaptorNecessities extends RaptorPlugin {
 				sender.sendMessage(error("Invalid nickname '" + nickname + "': nicknames can only contain letters, numbers, and underscores.", label, args));
 			}
 		}
+		
+		private final Random rand = new Random();
+		private final List<String> _off = Collections.singletonList("-off"),
+				secret = Arrays.asList("-off", "ButtfaceMcGee", "SteveMcSteveface", "Slartibartfast", "xX_3l1t3_h4x0r_69420_Xx", "xx_pussy_d3str0y3r_xx", "TheLegend27", "Rob2015", "GaylordSteambath", "Zalgo");
+		
+		@Override
+		public List<String> onTabComplete(CommandSender sender, String label, String[] args) {
+			if(args.length <= 1 || args.length == 2 && sender.hasPermission("raptortps.nickname.others"))
+				return stringsMatchingLastArg(args, true, args.length != 0 && args[args.length-1].length() >= 2 && rand.nextInt(100) < 5? secret : _off);
+			return Collections.emptyList();
+		}
+		
+	}
+	
+	class CommandSudo extends RCommand {
+		private final Random rand = new Random();
+		
+		@Override
+		public void onCommand(CommandSender sender, String label, String[] args) {
+			if(args.length < 2) {
+				sender.sendMessage(unknownCommand(label, args));
+				return;
+			}
+			
+			Player player = player(args[0]);
+			if(player == null) {
+				sender.sendMessage(playerNotFound(args[0], label, args, 1));
+				return;
+			}
+	
+			player.performCommand(join(args, 1));
+			if(rand.nextInt(100) == 1) {
+				player.sendMessage(new String[] { player.getName() + " is not in the sudoers file.", "This incident will be reported."});
+			}
+		}
+		
 	}
 	
 	class CommandRaptorNecessities extends RCommand {

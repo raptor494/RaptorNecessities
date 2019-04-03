@@ -26,7 +26,7 @@ public class NecessitiesConfig {
 			teleportRequest, teleportThere, teleportHere, 
 			teleportDeny, teleportDenied, 
 			pendingTeleportRequest, teleportIgnored, teleportUnignored, 
-			teleportBlocked, noHomesSet,
+			notIgnoringTeleport, teleportBlocked, noHomesSet,
 			homeSet, homeRemoved, homesListHeader, homeNameTooLong,
 			ignoreListHeader, homeNameFormat, homesListSeparator,
 			ignoreListSeparator, ignoreNameFormat,
@@ -37,6 +37,7 @@ public class NecessitiesConfig {
 			noSuchWarp, warpSet, warpRemoved,
 			confusion, nicknameAlreadyInUse, nicknameRemoved,
 			nicknameSet, nicknameTooLong;
+		private ChatColor defaultColor = ChatColor.WHITE;
 	}
 	
 	private Duration teleportDelay;
@@ -53,7 +54,8 @@ public class NecessitiesConfig {
 		if(messages.teleportWait == null) {
 			messages.teleportWait = new TextComponent("messages.teleportWait {0}");
 		}
-		return format(messages.teleportWait, 
+
+		return format(updateColor(messages.teleportWait), 
 				formatDuration(getTeleportDelay()));
 	}
 	
@@ -61,14 +63,14 @@ public class NecessitiesConfig {
 		if(messages.teleport == null) {
 			return messages.teleport = new TextComponent("messages.teleport");
 		}
-		return messages.teleport;
+		return updateColor(messages.teleport);
 	}
 	
 	public BaseComponent getTeleportCancelMessage() {
 		if(messages.teleportCancel == null) {
 			return messages.teleportCancel = new TextComponent("messages.teleportCancel");
 		}
-		return messages.teleportCancel;
+		return updateColor(messages.teleportCancel);
 	}
 	
 	/**
@@ -78,7 +80,7 @@ public class NecessitiesConfig {
 		if(messages.teleportRequest == null) {
 			messages.teleportRequest = new TextComponent("messages.teleportRequest {0}");
 		}
-		return format(messages.teleportRequest, 
+		return format(updateColor(messages.teleportRequest), 
 				ChatColor.stripColor(receiver.getDisplayName()));
 	}
 	
@@ -89,7 +91,7 @@ public class NecessitiesConfig {
 		if(messages.teleportDeny == null) {
 			messages.teleportDeny = new TextComponent("messages.teleportDeny {0} {1}");
 		}
-		return format(messages.teleportDeny, 
+		return format(updateColor(messages.teleportDeny), 
 				ChatColor.stripColor(sender.getDisplayName()), 
 				formatDuration(getAutoIgnoreTimeOnCancel()));
 	}
@@ -101,7 +103,7 @@ public class NecessitiesConfig {
 		if(messages.teleportAccept == null) {
 			messages.teleportAccept = new TextComponent("messages.teleportAccept {0}");
 		}
-		return format(messages.teleportAccept,
+		return format(updateColor(messages.teleportAccept),
 				ChatColor.stripColor(sender.getDisplayName()));
 	}
 	
@@ -112,7 +114,7 @@ public class NecessitiesConfig {
 		if(messages.teleportThere == null) {
 			messages.teleportThere = new TextComponent("messages.teleportThere {0} {1}");
 		}
-		return format(messages.teleportThere,
+		return format(updateColor(messages.teleportThere),
 				ChatColor.stripColor(sender.getDisplayName()),
 				formatDuration(getTeleportRequestTimeout()));
 	}
@@ -124,7 +126,7 @@ public class NecessitiesConfig {
 		if(messages.teleportHere == null) {
 			messages.teleportHere = new TextComponent("messages.teleportHere {0} {1}");
 		}
-		return format(messages.teleportHere,
+		return format(updateColor(messages.teleportHere),
 				ChatColor.stripColor(sender.getDisplayName()),
 				formatDuration(getTeleportRequestTimeout()));
 	}
@@ -136,7 +138,7 @@ public class NecessitiesConfig {
 		if(messages.teleportDenied == null) {
 			messages.teleportDenied = new TextComponent("messages.teleportDenied {0}");
 		}
-		return format(messages.teleportDenied,
+		return format(updateColor(messages.teleportDenied),
 				ChatColor.stripColor(receiver.getDisplayName()));
 	}
 	
@@ -147,7 +149,7 @@ public class NecessitiesConfig {
 		if(messages.teleportAccepted == null) {
 			messages.teleportAccepted = new TextComponent("messages.teleportAccepted {0}");
 		}
-		return format(messages.teleportAccepted,
+		return format(updateColor(messages.teleportAccepted),
 				ChatColor.stripColor(receiver.getDisplayName()));
 	}
 	
@@ -158,7 +160,7 @@ public class NecessitiesConfig {
 		if(messages.teleportIgnored == null) {
 			messages.teleportIgnored = new TextComponent("messages.teleportIgnored {0}");
 		}
-		return format(messages.teleportIgnored,
+		return format(updateColor(messages.teleportIgnored),
 				getName(ignored));
 	}
 	
@@ -170,8 +172,21 @@ public class NecessitiesConfig {
 			messages.teleportUnignored = new TextComponent("messages.teleportUnignored {0}");
 		}
 		
-		return format(messages.teleportUnignored,
+		return format(updateColor(messages.teleportUnignored),
 				getName(unignored));
+	}
+	
+	/**
+	 * Sent to the sender when they aren't currently ignoring tp requests from
+	 * a specific player.
+	 */
+	public BaseComponent getNotCurrentlyIgnoringTeleportMessage(OfflinePlayer notignored) {
+		if(messages.notIgnoringTeleport == null) {
+			messages.notIgnoringTeleport = new TextComponent("messages.notIgnoringTeleport {0}");
+		}
+		
+		return format(updateColor(messages.notIgnoringTeleport),
+				getName(notignored));
 	}
 	
 	/**
@@ -181,7 +196,7 @@ public class NecessitiesConfig {
 		if(messages.teleportBlocked == null) {
 			messages.teleportBlocked = new TextComponent("messages.teleportBlocked {0}");
 		}
-		return format(messages.teleportBlocked,
+		return format(updateColor(messages.teleportBlocked),
 				ChatColor.stripColor(blocker.getDisplayName()));
 	}
 	
@@ -192,7 +207,7 @@ public class NecessitiesConfig {
 		if(messages.pendingTeleportRequest == null) {
 			messages.pendingTeleportRequest = new TextComponent("messages.pendingTeleportRequest {0} {1}");
 		}
-		return format(messages.pendingTeleportRequest,
+		return format(updateColor(messages.pendingTeleportRequest),
 				ChatColor.stripColor(receiver.getDisplayName()),
 				formatDuration(timeLeft));
 	}
@@ -201,34 +216,37 @@ public class NecessitiesConfig {
 		if(messages.noHomesSet == null) {
 			messages.noHomesSet = new TextComponent("messages.noHomesSet");
 		}
-		return messages.noHomesSet;
+		return updateColor(messages.noHomesSet);
 	}
 	
 	public BaseComponent getHomeSetMessage(String homeName) {
 		if(messages.homeSet == null) {
 			messages.homeSet = new TextComponent("messages.homeSet {0}");
 		}
-		return format(messages.homeSet, homeName);
+		return format(updateColor(messages.homeSet), homeName);
 	}
 	
 	public BaseComponent getHomeRemovedMessage(String homeName) {
 		if(messages.homeRemoved == null) {
 			messages.homeRemoved = new TextComponent("messages.homeRemoved {0}");
 		}
-		return format(messages.homeRemoved, homeName);
+		return format(updateColor(messages.homeRemoved), homeName);
 	}
 	
 	public BaseComponent getHomesList(Map<String, Location> homes) {
 		if(messages.homesListHeader == null) {
 			messages.homesListHeader = new TextComponent("messages.homesListHeader");
 		}
+		updateColor(messages.homesListHeader);
 		if(messages.homesListSeparator == null) {
 			messages.homesListSeparator = new TextComponent(", ");
 			messages.homesListSeparator.setColor(ChatColor.RESET);
 		}
+		updateColor(messages.homesListSeparator);
 		if(messages.homeNameFormat == null) {
 			messages.homeNameFormat = new TextComponent("{0} {1} {2$1.2f},{3$1.2f},{4$1.2f} {5$1.2f}/{6$1.2f}");
 		}
+		updateColor(messages.homeNameFormat);
 		BaseComponent result = messages.homesListHeader.duplicate();
 		boolean first = true;
 		for(Map.Entry<String, Location> entry : homes.entrySet()) {
@@ -251,13 +269,16 @@ public class NecessitiesConfig {
 		if(messages.ignoreListHeader == null) {
 			messages.ignoreListHeader = new TextComponent("messages.ignoreListHeader");
 		}
+		updateColor(messages.ignoreListHeader);
 		if(messages.ignoreListSeparator == null) {
 			messages.ignoreListSeparator = new TextComponent(", ");
 			messages.ignoreListSeparator.setColor(ChatColor.RESET);
 		}
+		updateColor(messages.ignoreListSeparator);
 		if(messages.ignoreNameFormat == null) {
 			messages.ignoreNameFormat = new TextComponent("{0}");
 		}
+		updateColor(messages.ignoreNameFormat);
 		BaseComponent result = messages.ignoreListHeader.duplicate();
 		boolean first = true;
 		for(OfflinePlayer player : players) {
@@ -272,13 +293,16 @@ public class NecessitiesConfig {
 		if(messages.warpsListHeader == null) {
 			messages.warpsListHeader = new TextComponent("messages.warpsListHeader");
 		}
+		updateColor(messages.warpsListHeader);
 		if(messages.warpsListSeparator == null) {
 			messages.warpsListSeparator = new TextComponent(", ");
 			messages.warpsListSeparator.setColor(ChatColor.RESET);
 		}
+		updateColor(messages.warpsListSeparator);
 		if(messages.warpNameFormat == null) {
 			messages.warpNameFormat = new TextComponent("{0} {1} {2$1.2f},{3$1.2f},{4$1.2f} {5$1.2f}/{6$1.2f}");
 		}
+		updateColor(messages.warpNameFormat);
 		BaseComponent result = messages.warpsListHeader.duplicate();
 		boolean first = true;
 		for(Map.Entry<String, Location> entry : warps.entrySet()) {
@@ -301,98 +325,99 @@ public class NecessitiesConfig {
 		if(messages.homeNameTooLong == null) {
 			return messages.homeNameTooLong = new TextComponent("messages.homeNameTooLong");
 		}
-		return messages.homeNameTooLong;
+		return updateColor(messages.homeNameTooLong);
 	}
 	
 	public BaseComponent getNoPendingInvitationsMessage() {
 		if(messages.noPendingInvitations == null) {
 			return messages.noPendingInvitations = new TextComponent("messages.noPendingInvitations");
 		}
-		return messages.noPendingInvitations;
+		return updateColor(messages.noPendingInvitations);
 	}
 	
 	public BaseComponent getNoPreviousLocationMessage() {
 		if(messages.noPreviousLocation == null) {
 			messages.noPreviousLocation = new TextComponent("messages.noPreviousLocation");
 		}
-		return messages.noPreviousLocation;
+		return updateColor(messages.noPreviousLocation);
 	}
 	
 	public BaseComponent getTpaAllMessage(int numPlayersRequested) {
 		if(messages.tpaAll == null) {
 			messages.tpaAll = new TextComponent("messages.tpaAll {0}");
 		}
-		return format(messages.tpaAll, numPlayersRequested, numPlayersRequested == 1? "" : "s");
+		return format(updateColor(messages.tpaAll), numPlayersRequested, numPlayersRequested == 1? "" : "s");
 	}
 	
 	public BaseComponent getNoSuchHomeMessage(String home) {
 		if(messages.noSuchHome == null) {
 			messages.noSuchHome = new TextComponent("messages.noSuchHome {0}");
 		}
-		return format(messages.noSuchHome, home);
+		return format(updateColor(messages.noSuchHome), home);
 	}
 	
 	public BaseComponent getHomeMaxLimitReachedMessage(int maxHomeCount) {
 		if(messages.homeMaxLimitReached == null) {
 			messages.homeMaxLimitReached = new TextComponent("messages.homeMaxLimitReached {0}");
 		}
-		return format(messages.homeMaxLimitReached, maxHomeCount, maxHomeCount == 1? "" : "s");
+		return format(updateColor(messages.homeMaxLimitReached), 
+				maxHomeCount, maxHomeCount == 1? "" : "s");
 	}
 	
 	public BaseComponent getNoSuchWarpMessage(String name) {
 		if(messages.noSuchWarp == null) {
 			messages.noSuchWarp = new TextComponent("messages.noSuchWarp {0}");
 		}
-		return format(messages.noSuchWarp, name);
+		return format(updateColor(messages.noSuchWarp), name);
 	}
 	
 	public BaseComponent getWarpSetMessage(String name) {
 		if(messages.warpSet == null) {
 			messages.warpSet = new TextComponent("messages.warpSet {0}");
 		}
-		return format(messages.warpSet, name);
+		return format(updateColor(messages.warpSet), name);
 	}
 	
 	public BaseComponent getWarpRemovedMessage(String name) {
 		if(messages.warpRemoved == null) {
 			messages.warpRemoved = new TextComponent("messages.warpRemoved {0}");
 		}
-		return format(messages.warpRemoved, name);
+		return format(updateColor(messages.warpRemoved), name);
 	}
 	
 	public BaseComponent confusion() {
 		if(messages.confusion == null) {
 			messages.confusion = new TextComponent("messages.confusion");
 		}
-		return messages.confusion;
+		return updateColor(messages.confusion);
 	}
 	
 	public BaseComponent getNicknameAlreadyInUseMessage() {
 		if(messages.nicknameAlreadyInUse == null) {
 			messages.nicknameAlreadyInUse = new TextComponent("messages.nicknameAlreadyInUse");
 		}
-		return messages.nicknameAlreadyInUse;
+		return updateColor(messages.nicknameAlreadyInUse);
 	}
 	
 	public BaseComponent getNicknameRemovedMessage() {
 		if(messages.nicknameRemoved == null) {
 			messages.nicknameRemoved = new TextComponent("messages.nicknameRemoved");
 		}
-		return messages.nicknameRemoved;
+		return updateColor(messages.nicknameRemoved);
 	}
 	
 	public BaseComponent getNicknameSetMessage(String nickname) {
 		if(messages.nicknameSet == null) {
 			messages.nicknameSet = new TextComponent("messages.nicknameSet {0}");
 		}
-		return format(messages.nicknameSet, nickname);
+		return format(updateColor(messages.nicknameSet), nickname);
 	}
 	
 	public BaseComponent getNicknameTooLongMessage() {
 		if(messages.nicknameTooLong == null) {
 			messages.nicknameTooLong = new TextComponent("messages.nicknameTooLong");
 		}
-		return messages.nicknameTooLong;
+		return updateColor(messages.nicknameTooLong);
 	}
 	
 	public int getMaxHomesFor(Player player) {
@@ -489,5 +514,12 @@ public class NecessitiesConfig {
 		if(player == null)
 			return offlinePlayer.getName();
 		else return ChatColor.stripColor(player.getDisplayName());
+	}
+	
+	private BaseComponent updateColor(BaseComponent text) {
+		if(text == null) return null;
+		if(text.getColorRaw() == null)
+			text.setColor(messages.defaultColor);
+		return text;
 	}
 }
